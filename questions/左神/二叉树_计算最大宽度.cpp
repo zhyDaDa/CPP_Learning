@@ -14,6 +14,7 @@ struct Node
     }
 };
 
+// 用map记录每个node所在层
 int getMaxWidth1(Node *head)
 {
     queue<Node *> q;
@@ -52,6 +53,7 @@ int getMaxWidth1(Node *head)
     }
     return max;
 }
+// 用上下两层的计数器判断是否走完
 int getMaxWidth2(Node *head)
 {
     queue<Node *> q;
@@ -84,6 +86,39 @@ int getMaxWidth2(Node *head)
     }
     return max;
 }
+// 用两个指针记录最末尾的节点
+int getMaxWidth3(Node *head)
+{
+    queue<Node *> q;
+    q.push(head);
+    Node *curEnd = head;
+    Node *nextEnd;
+    int count = 0;
+    int max = 1;
+    while (!q.empty())
+    {
+        Node *cur = q.front();
+        q.pop();
+        count++;
+
+        if (cur->left != nullptr)
+        {
+            q.push(nextEnd = cur->left);
+        }
+        if (cur->right != nullptr)
+        {
+            q.push(nextEnd = cur->right);
+        }
+
+        if (cur == curEnd)
+        {
+            max = max > count ? max : count;
+            count = 0;
+            curEnd = nextEnd;
+        }
+    }
+    return max;
+}
 
 int main()
 {
@@ -97,6 +132,7 @@ int main()
 
     cout << getMaxWidth1(head) << endl;
     cout << getMaxWidth2(head) << endl;
+    cout << getMaxWidth3(head) << endl;
 
     return 0;
 }
