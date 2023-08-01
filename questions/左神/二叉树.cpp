@@ -97,7 +97,8 @@ struct BBT_return
 
 BBT_return BBT_process(Node *head)
 {
-    if (head ==nullptr){
+    if (head == nullptr)
+    {
         return BBT_return(true, 0);
     }
     BBT_return left = BBT_process(head->left);
@@ -114,6 +115,38 @@ bool isBBT(Node *head)
     return BBT_process(head).isBBT;
 }
 
+struct FBT_return
+{
+    int h;
+    int n;
+    FBT_return(int h, int n){
+        this->h = h;
+        this->n = n;
+    }
+};
+
+FBT_return FBT_process(Node *head)
+{
+    if(head == nullptr)
+        return FBT_return(0, 0);
+    FBT_return left = FBT_process(head->left);
+    FBT_return right = FBT_process(head->right);
+
+    int h = max(left.h, right.h)+1;
+    int n = left.n + right.n + 1;
+
+    return FBT_return(h, n);
+}
+
+bool isFBT(Node *head)
+{
+    FBT_return ans = FBT_process(head);
+    if (ans.n == pow(2, ans.h)-1)
+        return true;
+    else
+        return false;
+}
+
 int main()
 {
     Node *head = new Node(1);
@@ -127,6 +160,13 @@ int main()
     head->left->left->right = new Node(777);
 
     printTree(head);
-    cout << (isCBT(head) ? "Is CBT" : "Isn't CBT") << endl;
+    cout << (isBBT(head) ? "Is BBT" : "Isn't BBT") << endl;
+
+    head->left->left->right = NULL;
+
+
+
+    printTree(head);
+    cout << (isBBT(head) ? "Is BBT" : "Isn't BBT") << endl;
     return 0;
 }
