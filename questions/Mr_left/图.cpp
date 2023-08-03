@@ -105,7 +105,7 @@ Graph *createGraph(vector<vector<int>> matrix)
     return g;
 }
 
-void inOrderPrintGraph(Node *root)
+void BFS(Node *root)
 {
     queue<Node *> q;
     set<Node *> s;
@@ -116,29 +116,106 @@ void inOrderPrintGraph(Node *root)
         Node *cur = q.front();
         q.pop();
         cout << cur->value << " ";
-
-        for (int i = 0; i < cur->nexts.size(); i++)
+        for (auto next : cur->nexts)
         {
-            if (!s.count(cur->nexts[i]))
+            if (!s.count(next))
             {
-                q.push(cur->nexts[i]);
-                s.insert(cur->nexts[i]);
+                q.push(next);
+                s.insert(next);
             }
         }
     }
     cout << endl;
 }
 
+void DFS(Node *root)
+{
+    stack<Node *> st;
+    set<Node *> se;
+    st.push(root);
+    se.insert(root);
+    cout << root->value << " ";
+    while (!st.empty())
+    {
+        Node *cur = st.top();
+        st.pop();
+        for (auto next : cur->nexts)
+        {
+            if (!se.count(next))
+            {
+                st.push(cur);
+                st.push(next);
+                se.insert(next);
+                cout << next->value << " ";
+                break;
+            }
+        }
+    }
+    cout << endl;
+}
+
+vector<Node *> sortedTopology(Graph *g)
+{
+    map<Node *, int> m;
+    queue<Node *> zeroQ;
+    for (auto i : g->nodes)
+    {
+        if (i.second->in == 0)
+        {
+            zeroQ.push(i.second);
+        }
+        else
+        {
+            m[i.second] = i.second->in;
+        }
+    }
+    // for (int i = 1; i <= 6; i++)
+    // {
+    //     cout << m[g->nodes[i]] << " ";
+    // }
+    // cout << endl;
+    // for (Node *q = zeroQ.front(); q != zeroQ.back(); q++)
+    // {
+    //     cout << q->value << " ";
+    // }
+    // cout << zeroQ.back()->value << endl;
+
+    vector<Node *> ansList;
+    while (!zeroQ.empty())
+    {
+        Node *cur = zeroQ.front();
+        ansList.push_back(cur);
+        zeroQ.pop();
+        for (Node *next : cur->nexts)
+        {
+            if (--m[next] == 0)
+            {
+                zeroQ.push(next);
+            }
+        }
+    }
+    return ansList;
+}
+
 int main()
 {
     vector<vector<int>> matrix = {
-        {3, 1, 2},
-        {5, 1, 3},
-        {1, 2, 3},
-        {7, 2, 4},
-        {4, 3, 5},
-        {2, 3, 6},
-        {6, 5, 2}};
+        {1, 1, 2},
+        {2, 1, 3},
+        {3, 2, 3},
+        {4, 2, 4},
+        {5, 3, 5},
+        {6, 3, 6},
+        // {7, 5, 2},
+    };
     Graph *g = createGraph(matrix);
-    inOrderPrintGraph(g->nodes[1]);
+    // BFS(g->nodes[1]);
+    // DFS(g->nodes[1]);
+    vector<Node *> v = sortedTopology(g);
+    cout << v.size() << endl;
+    for (auto i : v)
+    {
+        cout << i->value << " ";
+    }
+    cout << endl;
 }
